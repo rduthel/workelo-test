@@ -28,6 +28,23 @@ RSpec.describe "calendar" do
   end
 
   describe "#free_slots" do
+    let(:input) { JSON.parse(File.read("spec/fixtures/inputs/free_slots/step/#{step}/input.json")) }
+    let(:output) do
+      raw_output = JSON.parse(File.read("spec/fixtures/outputs/free_slots/step/#{step}/output.json"))
+      raw_output.each do |hash|
+        hash["start"] = Time.new(hash["start"])
+        hash["end"] = Time.new(hash["end"])
+      end
+    end
+
+    context "step 1" do
+      let(:step) { 1 }
+
+      it "works" do
+        expect(free_slots(input, step)).to match_array(output)
+      end
+    end
+
     context "step 2" do
       let(:input) { JSON.parse(File.read("spec/fixtures/inputs/free_slots/step/#{step}/input.json")) }
       let(:output) do
@@ -47,18 +64,26 @@ RSpec.describe "calendar" do
   end
 
   describe "#common_free_slots" do
-    context "step 1" do
-      let(:input_sandra) { JSON.parse(File.read("spec/fixtures/inputs/common_free_slots/step/#{step}/input_sandra.json")) }
-      let(:input_andy) { JSON.parse(File.read("spec/fixtures/inputs/common_free_slots/step/#{step}/input_andy.json")) }
-      let(:output) do
-        raw_output = JSON.parse(File.read("spec/fixtures/outputs/common_free_slots/step/#{step}/output.json"))
-        raw_output.each do |hash|
-          hash["start"] = Time.new(hash["start"])
-          hash["end"] = Time.new(hash["end"])
-        end
+    let(:input_sandra) { JSON.parse(File.read("spec/fixtures/inputs/common_free_slots/step/#{step}/input_sandra.json")) }
+    let(:input_andy) { JSON.parse(File.read("spec/fixtures/inputs/common_free_slots/step/#{step}/input_andy.json")) }
+    let(:output) do
+      raw_output = JSON.parse(File.read("spec/fixtures/outputs/common_free_slots/step/#{step}/output.json"))
+      raw_output.each do |hash|
+        hash["start"] = Time.new(hash["start"])
+        hash["end"] = Time.new(hash["end"])
       end
+    end
 
+    context "step 1" do
       let(:step) { 1 }
+
+      it "works" do
+        expect(common_free_slots(input_andy, input_sandra, step)).to match_array(output)
+      end
+    end
+
+    context "step 2" do
+      let(:step) { 2 }
 
       it "works" do
         expect(common_free_slots(input_andy, input_sandra, step)).to match_array(output)
