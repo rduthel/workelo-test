@@ -69,12 +69,12 @@ def free_slots(busy_calendar, step)
         redo
       elsif next_slot
         start_of_next_busy_slot = next_slot.start
-        result.push(slots_of_day.select { |calendar_slot| after_current_slot_and_before_next_slot(calendar_slot, busy_slot.end, start_of_next_busy_slot) })
+        result.push(slots_of_day.select { |slot| after_current_slot_and_before_next_slot(slot, busy_slot.end, start_of_next_busy_slot) })
       elsif end_of_slot_before_end_of_day
-        result.push(slots_of_day.select { |calendar_slot| after_current_slot_and_before_end_of_day(calendar_slot, day, busy_slot.end) })
+        result.push(slots_of_day.select { |slot| after_current_slot_and_before_end_of_day(slot, day, busy_slot.end) })
       else
         end_of_previous_slot = busy_slots_of_day[index - 1].end
-        result.push(slots_of_day.select { |calendar_slot| after_current_slot_or_between_previous_and_current(calendar_slot, busy_slot, end_of_previous_slot) })
+        result.push(slots_of_day.select { |slot| after_current_slot_or_between_previous_and_current(slot, busy_slot, end_of_previous_slot) })
       end
     end
   end
