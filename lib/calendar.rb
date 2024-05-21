@@ -38,6 +38,13 @@ def after_current_slot_and_before_end_of_day(calendar_slot, day, end_of_busy_slo
   after_current_slot && before_end_of_day
 end
 
+def after_current_slot_or_between_previous_and_current(busy_slots, calendar_slot, end_of_busy_slot, index, start_of_busy_slot)
+  after_current_slot = calendar_slot["start"] >= end_of_busy_slot
+  before_current_slot = calendar_slot["end"] <= start_of_busy_slot
+  after_previous_slot = calendar_slot["start"] >= Time.new(busy_slots[index - 1]["end"])
+  after_current_slot || (before_current_slot && after_previous_slot)
+end
+
 def free_slots(busy_days, step)
   result = []
   busy_days_by_day = busy_days.group_by { |slot| Time.new(slot["start"]).to_date }
@@ -63,12 +70,7 @@ def free_slots(busy_days, step)
       elsif end_of_slot_before_end_of_day
         result.push(calendar_slots.select { |calendar_slot| after_current_slot_and_before_end_of_day(calendar_slot, day, end_of_busy_slot) })
       else
-        result.push(calendar_slots.select do |calendar_slot|
-          after_current_slot = calendar_slot["start"] >= end_of_busy_slot
-          before_current_slot = calendar_slot["end"] <= start_of_busy_slot
-          after_previous_slot = calendar_slot["start"] >= Time.new(busy_slots[index - 1]["end"])
-          after_current_slot || (before_current_slot && after_previous_slot)
-        end)
+        result.push(calendar_slots.select { |calendar_slot| after_current_slot_or_between_previous_and_current(busy_slots, calendar_slot, end_of_busy_slot, index, start_of_busy_slot) })
       end
     end
   end
