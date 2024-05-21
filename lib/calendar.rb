@@ -36,22 +36,22 @@ def free_slots(busy_calendar, step)
   busy_calendar_day_by_day.each_pair do |day, busy_slots_of_day|
     search_before_start_of_day = false
     slots_of_day = hourly_ranges(day, step)
-    busy_slots_of_day.each_with_index do |busy_slot, index|
+    busy_slots_of_day.each_with_index do |current_slot, index|
       next_slot = busy_slots_of_day[index + 1]
-      first_slot_before_start_of_day = index.zero? && busy_slot.start.hour > START_OF_DAY
-      end_of_slot_before_end_of_day = busy_slot.end.hour < END_OF_DAY
+      first_slot_before_start_of_day = index.zero? && current_slot.start.hour > START_OF_DAY
+      end_of_slot_before_end_of_day = current_slot.end.hour < END_OF_DAY
 
       if first_slot_before_start_of_day && !search_before_start_of_day
-        selection = SlotsBeforeCurrentSelection.new(slots: slots_of_day, current_slot: busy_slot).select
+        selection = SlotsBeforeCurrentSelection.new(slots: slots_of_day, current_slot: current_slot).select
         result.push(selection)
         search_before_start_of_day = true
         redo
       elsif next_slot
-        selection = AfterCurrentSlotAndBeforeNextOne.new(slots: slots_of_day, current_slot: busy_slot, next_slot:).select
+        selection = AfterCurrentSlotAndBeforeNextOne.new(slots: slots_of_day, current_slot: current_slot, next_slot:).select
       elsif end_of_slot_before_end_of_day
-        selection = AfterCurrentSlotAndBeforeEndOfDay.new(slots: slots_of_day, current_slot: busy_slot, end_of_day: date_at(day, END_OF_DAY)).select
+        selection = AfterCurrentSlotAndBeforeEndOfDay.new(slots: slots_of_day, current_slot: current_slot, end_of_day: date_at(day, END_OF_DAY)).select
       else
-        selection = AfterCurrentSlotOrBetweenPreviousAndCurrent.new(slots: slots_of_day, current_slot: busy_slot, previous_slot: busy_slots_of_day[index - 1]).select
+        selection = AfterCurrentSlotOrBetweenPreviousAndCurrent.new(slots: slots_of_day, current_slot: current_slot, previous_slot: busy_slots_of_day[index - 1]).select
       end
 
       result.push(selection)
