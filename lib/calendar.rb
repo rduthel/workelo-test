@@ -39,9 +39,9 @@ def after_current_slot_and_before_end_of_day(calendar_slot, day, end_of_busy_slo
 end
 
 def after_current_slot_or_between_previous_and_current(calendar_slot, slot, end_of_previous_slot)
-  after_current_slot = calendar_slot["start"] >= slot.end
-  before_current_slot = calendar_slot["end"] <= slot.start
   after_previous_slot = calendar_slot["start"] >= end_of_previous_slot
+  before_current_slot = calendar_slot["end"] <= slot.start
+  after_current_slot = calendar_slot["start"] >= slot.end
   after_current_slot || (before_current_slot && after_previous_slot)
 end
 
