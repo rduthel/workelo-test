@@ -75,7 +75,8 @@ def free_slots(busy_calendar, step)
         selection = slots_of_day.select { |slot| after_current_slot_and_before_end_of_day(slot:, end_of_day: date_at(day, END_OF_DAY), end_of_busy_slot: busy_slot.end) }
         result.push(selection)
       else
-        result.push(slots_of_day.select { |slot| after_current_slot_or_between_previous_and_current(slot:, busy_slot:, end_of_previous_slot: busy_slots_of_day[index - 1].end) })
+        selection = slots_of_day.select { |slot| after_current_slot_or_between_previous_and_current(slot:, busy_slot:, end_of_previous_slot: busy_slots_of_day[index - 1].end) }
+        result.push(selection)
       end
     end
   end
