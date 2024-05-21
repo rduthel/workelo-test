@@ -59,22 +59,21 @@ def free_slots(busy_calendar, step)
     search_before_start_of_day = false
     slots_of_day = hourly_ranges(day, step)
     busy_slots_of_day.each_with_index do |busy_slot, index|
-      end_of_busy_slot = busy_slot.end
       first_slot_before_start_of_day = index.zero? && busy_slot.start.hour > START_OF_DAY
       next_slot = busy_slots_of_day[index + 1]
-      end_of_slot_before_end_of_day = end_of_busy_slot.hour < END_OF_DAY
+      end_of_slot_before_end_of_day = busy_slot.end.hour < END_OF_DAY
       if first_slot_before_start_of_day && !search_before_start_of_day
         result.push(slots_before_current(slots_of_day, busy_slot.start))
         search_before_start_of_day = true
         redo
       elsif next_slot
         start_of_next_busy_slot = next_slot.start
-        result.push(slots_of_day.select { |calendar_slot| after_current_slot_and_before_next_slot(calendar_slot, end_of_busy_slot, start_of_next_busy_slot) })
+        result.push(slots_of_day.select { |calendar_slot| after_current_slot_and_before_next_slot(calendar_slot, busy_slot.end, start_of_next_busy_slot) })
       elsif end_of_slot_before_end_of_day
-        result.push(slots_of_day.select { |calendar_slot| after_current_slot_and_before_end_of_day(calendar_slot, day, end_of_busy_slot) })
+        result.push(slots_of_day.select { |calendar_slot| after_current_slot_and_before_end_of_day(calendar_slot, day, busy_slot.end) })
       else
         end_of_previous_slot = busy_slots_of_day[index - 1].end
-        result.push(slots_of_day.select { |calendar_slot| after_current_slot_or_between_previous_and_current(calendar_slot, end_of_busy_slot, busy_slot.start, end_of_previous_slot) })
+        result.push(slots_of_day.select { |calendar_slot| after_current_slot_or_between_previous_and_current(calendar_slot, busy_slot.end, busy_slot.start, end_of_previous_slot) })
       end
     end
   end
