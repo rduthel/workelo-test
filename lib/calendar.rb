@@ -60,9 +60,10 @@ def free_slots(busy_calendar, step)
     search_before_start_of_day = false
     slots_of_day = hourly_ranges(day, step)
     busy_slots_of_day.each_with_index do |busy_slot, index|
-      first_slot_before_start_of_day = index.zero? && busy_slot.start.hour > START_OF_DAY
       next_slot = busy_slots_of_day[index + 1]
+      first_slot_before_start_of_day = index.zero? && busy_slot.start.hour > START_OF_DAY
       end_of_slot_before_end_of_day = busy_slot.end.hour < END_OF_DAY
+
       if first_slot_before_start_of_day && !search_before_start_of_day
         selection = slots_before_current(slots: slots_of_day, start_of_busy_slot: busy_slot.start)
         result.push(selection)
