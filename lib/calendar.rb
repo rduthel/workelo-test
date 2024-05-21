@@ -42,7 +42,7 @@ def free_slots(busy_calendar, step)
       end_of_slot_before_end_of_day = busy_slot.end.hour < END_OF_DAY
 
       if first_slot_before_start_of_day && !search_before_start_of_day
-        selection = SlotsBeforeCurrentSelection.new(slots: slots_of_day, start_of_busy_slot: busy_slot.start).select
+        selection = SlotsBeforeCurrentSelection.new(slots: slots_of_day, current_slot: busy_slot).select
         result.push(selection)
         search_before_start_of_day = true
         redo
@@ -80,16 +80,9 @@ class Selection
   end
 end
 
-class SlotsBeforeCurrentSelection
-  attr_accessor :slots, :start_of_busy_slot
-
-  def initialize(slots:, start_of_busy_slot:)
-    @slots = slots
-    @start_of_busy_slot = start_of_busy_slot
-  end
-
+class SlotsBeforeCurrentSelection < Selection
   def select
-    slots.select { |slot| slot["end"] <= start_of_busy_slot }
+    slots.select { |slot| slot["end"] <= current_slot&.start }
   end
 end
 
