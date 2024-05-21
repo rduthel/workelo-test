@@ -27,15 +27,6 @@ def hourly_ranges(date, step)
   result
 end
 
-def after_current_slot_or_between_previous_and_current(slots_of_day:, busy_slot:, end_of_previous_slot:)
-  slots_of_day.select do |slot|
-    after_previous_slot = slot["start"] >= end_of_previous_slot
-    before_current_slot = slot["end"] <= busy_slot.start
-    after_current_slot = slot["start"] >= busy_slot.end
-    after_current_slot || (before_current_slot && after_previous_slot)
-  end
-end
-
 def free_slots(busy_calendar, step)
   result = []
   busy_calendar_day_by_day = busy_calendar
@@ -60,7 +51,7 @@ def free_slots(busy_calendar, step)
       elsif end_of_slot_before_end_of_day
         selection = AfterCurrentSlotAndBeforeEndOfDay.new(slots: slots_of_day, end_of_day: date_at(day, END_OF_DAY), end_of_busy_slot: busy_slot.end).select
       else
-        selection = after_current_slot_or_between_previous_and_current(slots_of_day:, busy_slot:, end_of_previous_slot: busy_slots_of_day[index - 1].end)
+        selection = AfterCurrentSlotOrBetweenPreviousAndCurrent.new(slots: slots_of_day, busy_slot:, end_of_previous_slot: busy_slots_of_day[index - 1].end).select
       end
 
       result.push(selection)
@@ -119,6 +110,25 @@ class AfterCurrentSlotAndBeforeEndOfDay
       after_current_slot = slot["start"] >= end_of_busy_slot
       before_end_of_day = slot["end"] <= end_of_day
       after_current_slot && before_end_of_day
+    end
+  end
+end
+
+class AfterCurrentSlotOrBetweenPreviousAndCurrent
+  attr_accessor :slots, :busy_slot, :end_of_previous_slot
+
+  def initialize(slots:, busy_slot:, end_of_previous_slot:)
+    @slots = slots
+    @busy_slot = busy_slot
+    @end_of_previous_slot = end_of_previous_slot
+  end
+
+  def select
+    slots.select do |slot|
+      after_previous_slot = slot["start"] >= end_of_previous_slot
+      before_current_slot = slot["end"] <= busy_slot.start
+      after_current_slot = slot["start"] >= busy_slot.end
+      after_current_slot || (before_current_slot && after_previous_slot)
     end
   end
 end
