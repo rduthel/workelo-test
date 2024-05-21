@@ -49,7 +49,7 @@ def free_slots(busy_calendar, step)
       elsif next_slot
         selection = AfterCurrentSlotAndBeforeNextOne.new(slots: slots_of_day, current_slot: busy_slot, next_slot:).select
       elsif end_of_slot_before_end_of_day
-        selection = AfterCurrentSlotAndBeforeEndOfDay.new(slots: slots_of_day, end_of_day: date_at(day, END_OF_DAY), end_of_busy_slot: busy_slot.end).select
+        selection = AfterCurrentSlotAndBeforeEndOfDay.new(slots: slots_of_day, current_slot: busy_slot, end_of_day: date_at(day, END_OF_DAY)).select
       else
         selection = AfterCurrentSlotOrBetweenPreviousAndCurrent.new(slots: slots_of_day, busy_slot:, end_of_previous_slot: busy_slots_of_day[index - 1].end).select
       end
@@ -66,13 +66,14 @@ def common_free_slots(first_calendar, second_calendar, step)
 end
 
 class Selection
-  attr_accessor :slots, :previous_slot, :current_slot, :next_slot
+  attr_accessor :slots, :previous_slot, :current_slot, :next_slot, :end_of_day
 
-  def initialize(slots:, previous_slot: nil, current_slot: nil, next_slot: nil)
+  def initialize(slots:, previous_slot: nil, current_slot: nil, next_slot: nil, end_of_day: nil)
     @slots = slots
     @previous_slot = previous_slot
     @current_slot = current_slot
     @next_slot = next_slot
+    @end_of_day = end_of_day
   end
 
   def select
@@ -96,18 +97,10 @@ class AfterCurrentSlotAndBeforeNextOne < Selection
   end
 end
 
-class AfterCurrentSlotAndBeforeEndOfDay
-  attr_accessor :slots, :end_of_day, :end_of_busy_slot
-
-  def initialize(slots:, end_of_day:, end_of_busy_slot:)
-    @slots = slots
-    @end_of_day = end_of_day
-    @end_of_busy_slot = end_of_busy_slot
-  end
-
+class AfterCurrentSlotAndBeforeEndOfDay < Selection
   def select
     slots.select do |slot|
-      after_current_slot = slot["start"] >= end_of_busy_slot
+      after_current_slot = slot["start"] >= current_slot&.end
       before_end_of_day = slot["end"] <= end_of_day
       after_current_slot && before_end_of_day
     end
