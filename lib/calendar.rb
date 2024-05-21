@@ -39,10 +39,10 @@ def after_current_slot_and_before_end_of_day(slot:, end_of_day:, end_of_busy_slo
   after_current_slot && before_end_of_day
 end
 
-def after_current_slot_or_between_previous_and_current(calendar_slot, slot, end_of_previous_slot)
-  after_previous_slot = calendar_slot["start"] >= end_of_previous_slot
-  before_current_slot = calendar_slot["end"] <= slot.start
-  after_current_slot = calendar_slot["start"] >= slot.end
+def after_current_slot_or_between_previous_and_current(slot:, busy_slot:, end_of_previous_slot:)
+  after_previous_slot = slot["start"] >= end_of_previous_slot
+  before_current_slot = slot["end"] <= busy_slot.start
+  after_current_slot = slot["start"] >= busy_slot.end
   after_current_slot || (before_current_slot && after_previous_slot)
 end
 
@@ -72,8 +72,7 @@ def free_slots(busy_calendar, step)
       elsif end_of_slot_before_end_of_day
         result.push(slots_of_day.select { |slot| after_current_slot_and_before_end_of_day(slot:, end_of_day: date_at(day, END_OF_DAY), end_of_busy_slot: busy_slot.end) })
       else
-        end_of_previous_slot = busy_slots_of_day[index - 1].end
-        result.push(slots_of_day.select { |slot| after_current_slot_or_between_previous_and_current(slot, busy_slot, end_of_previous_slot) })
+        result.push(slots_of_day.select { |slot| after_current_slot_or_between_previous_and_current(slot:, busy_slot:, end_of_previous_slot: busy_slots_of_day[index - 1].end) })
       end
     end
   end
