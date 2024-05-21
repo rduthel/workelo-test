@@ -2,6 +2,7 @@ require "date"
 require_relative "../app/models/slot"
 require_relative "selectors/selection"
 require_relative "selectors/slots_before_current_selection"
+require_relative "selectors/after_current_slot_and_before_next_one_selection"
 
 ONE_HOUR = 60 * 60
 MINIMUM_STEP = ONE_HOUR
@@ -49,7 +50,7 @@ def free_slots(busy_calendar, step)
         search_before_start_of_day = true
         redo
       elsif next_slot
-        selection = AfterCurrentSlotAndBeforeNextOne.new(slots: slots_of_day, current_slot:, next_slot:).select
+        selection = AfterCurrentSlotAndBeforeNextOneSelection.new(slots: slots_of_day, current_slot:, next_slot:).select
       elsif end_of_slot_before_end_of_day
         selection = AfterCurrentSlotAndBeforeEndOfDay.new(slots: slots_of_day, current_slot:, end_of_day: date_at(day, END_OF_DAY)).select
       else
@@ -65,16 +66,6 @@ end
 
 def common_free_slots(first_calendar, second_calendar, step)
   free_slots(first_calendar, step) & free_slots(second_calendar, step)
-end
-
-class AfterCurrentSlotAndBeforeNextOne < Selection
-  def select
-    slots.select do |slot|
-      after_current_slot = slot["start"] >= current_slot&.end
-      before_next_slot = slot["end"] <= next_slot&.start
-      after_current_slot && before_next_slot
-    end
-  end
 end
 
 class AfterCurrentSlotAndBeforeEndOfDay < Selection
