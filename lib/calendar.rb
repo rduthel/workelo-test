@@ -53,10 +53,9 @@ def free_slots(busy_calendar, step)
   result = []
   busy_calendar_day_by_day = busy_calendar.group_by { |slot| Time.new(slot["start"]).to_date }
 
-  busy_calendar_day_by_day.each_key do |day|
+  busy_calendar_day_by_day.each_pair do |day, busy_slots_of_day|
     search_before_start_of_day = false
     calendar_slots = hourly_ranges(day, step)
-    busy_slots_of_day = busy_calendar_day_by_day[day]
     busy_slots_of_day.each_with_index do |busy_slot, index|
       start_of_busy_slot = Time.new(busy_slot["start"])
       end_of_busy_slot = Time.new(busy_slot["end"])
