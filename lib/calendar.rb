@@ -42,16 +42,16 @@ def free_slots(busy_calendar, step)
       end_of_slot_before_end_of_day = current_slot.end.hour < END_OF_DAY
 
       if first_slot_before_start_of_day && !search_before_start_of_day
-        selection = SlotsBeforeCurrentSelection.new(slots: slots_of_day, current_slot: current_slot).select
+        selection = SlotsBeforeCurrentSelection.new(slots: slots_of_day, current_slot:).select
         result.push(selection)
         search_before_start_of_day = true
         redo
       elsif next_slot
-        selection = AfterCurrentSlotAndBeforeNextOne.new(slots: slots_of_day, current_slot: current_slot, next_slot:).select
+        selection = AfterCurrentSlotAndBeforeNextOne.new(slots: slots_of_day, current_slot:, next_slot:).select
       elsif end_of_slot_before_end_of_day
-        selection = AfterCurrentSlotAndBeforeEndOfDay.new(slots: slots_of_day, current_slot: current_slot, end_of_day: date_at(day, END_OF_DAY)).select
+        selection = AfterCurrentSlotAndBeforeEndOfDay.new(slots: slots_of_day, current_slot:, end_of_day: date_at(day, END_OF_DAY)).select
       else
-        selection = AfterCurrentSlotOrBetweenPreviousAndCurrent.new(slots: slots_of_day, current_slot: current_slot, previous_slot: busy_slots_of_day[index - 1]).select
+        selection = AfterCurrentSlotOrBetweenPreviousAndCurrent.new(slots: slots_of_day, current_slot:, previous_slot: busy_slots_of_day[index - 1]).select
       end
 
       result.push(selection)
