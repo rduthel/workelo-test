@@ -12,15 +12,15 @@ end
 
 def hourly_ranges(date, step)
   result = []
-  start_of_day = date_at(date, START_OF_DAY)
-  end_of_day = date_at(date, END_OF_DAY)
+  start_of_date = date_at(date, START_OF_DAY)
+  end_of_date = date_at(date, END_OF_DAY)
 
-  while start_of_day + step * ONE_HOUR <= end_of_day
-    range_start = start_of_day
-    range_end = start_of_day + step * ONE_HOUR
+  while start_of_date + step * ONE_HOUR <= end_of_date
+    range_start = start_of_date
+    range_end = start_of_date + step * ONE_HOUR
     result.push({"start" => range_start, "end" => range_end})
 
-    start_of_day += MINIMUM_STEP
+    start_of_date += MINIMUM_STEP
   end
 
   result
