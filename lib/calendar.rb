@@ -1,6 +1,9 @@
 require "date"
 
 ONE_HOUR = 60 * 60
+MINIMUM_STEP = ONE_HOUR
+START_OF_DAY = 9
+END_OF_DAY = 18
 
 def date_at(date, hour)
   date_at_midnight = Time.new(date.year, date.month, date.day)
@@ -9,15 +12,15 @@ end
 
 def hourly_ranges(date, step)
   result = []
-  start_of_day = date_at(date, 9)
-  end_of_day = date_at(date, 18)
+  start_of_day = date_at(date, START_OF_DAY)
+  end_of_day = date_at(date, END_OF_DAY)
 
   while start_of_day + step * ONE_HOUR <= end_of_day
     range_start = start_of_day
     range_end = start_of_day + step * ONE_HOUR
     result.push({"start" => range_start, "end" => range_end})
 
-    start_of_day += ONE_HOUR
+    start_of_day += MINIMUM_STEP
   end
 
   result
@@ -28,19 +31,19 @@ def free_slots(busy_days, step)
   busy_days_by_day = busy_days.group_by { |slot| Time.new(slot["start"]).to_date }
 
   busy_days_by_day.each_key do |day|
-    search_before_9 = false
+    search_before_start_of_day = false
     calendar_slots = hourly_ranges(day, step)
     busy_slots = busy_days_by_day[day]
     busy_slots.each_with_index do |busy_slot, index|
       start_of_busy_slot = Time.new(busy_slot["start"])
       end_of_busy_slot = Time.new(busy_slot["end"])
-      first_slot_before_start_of_day = index.zero? && start_of_busy_slot.hour > 9
+      first_slot_before_start_of_day = index.zero? && start_of_busy_slot.hour > START_OF_DAY
       next_slot = busy_slots[index + 1]
-      end_of_slot_before_end_of_day = end_of_busy_slot.hour < 18
-      if first_slot_before_start_of_day && !search_before_9
+      end_of_slot_before_end_of_day = end_of_busy_slot.hour < END_OF_DAY
+      if first_slot_before_start_of_day && !search_before_start_of_day
         slots_before_current = calendar_slots.select { |calendar_slot| calendar_slot["end"] <= start_of_busy_slot }
         result.push(slots_before_current)
-        search_before_9 = true
+        search_before_start_of_day = true
         redo
       elsif next_slot
         start_of_next_busy_slot = Time.new(next_slot["start"])
@@ -52,7 +55,7 @@ def free_slots(busy_days, step)
       elsif end_of_slot_before_end_of_day
         result.push(calendar_slots.select do |calendar_slot|
           after_current_slot = calendar_slot["start"] >= end_of_busy_slot
-          before_end_of_day = calendar_slot["end"] <= date_at(day, 18)
+          before_end_of_day = calendar_slot["end"] <= date_at(day, END_OF_DAY)
           after_current_slot && before_end_of_day
         end)
       else
