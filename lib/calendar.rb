@@ -26,6 +26,12 @@ def hourly_ranges(date, step)
   result
 end
 
+def after_current_slot_and_before_next_slot(calendar_slot, end_of_busy_slot, start_of_next_busy_slot)
+  after_current_slot = calendar_slot["start"] >= end_of_busy_slot
+  before_next_slot = calendar_slot["end"] <= start_of_next_busy_slot
+  after_current_slot && before_next_slot
+end
+
 def free_slots(busy_days, step)
   result = []
   busy_days_by_day = busy_days.group_by { |slot| Time.new(slot["start"]).to_date }
@@ -47,11 +53,7 @@ def free_slots(busy_days, step)
         redo
       elsif next_slot
         start_of_next_busy_slot = Time.new(next_slot["start"])
-        result.push(calendar_slots.select do |calendar_slot|
-          before_next_slot = calendar_slot["end"] <= start_of_next_busy_slot
-          after_current_slot = calendar_slot["start"] >= end_of_busy_slot
-          before_next_slot && after_current_slot
-        end)
+        result.push(calendar_slots.select { |calendar_slot| after_current_slot_and_before_next_slot(calendar_slot, end_of_busy_slot, start_of_next_busy_slot) })
       elsif end_of_slot_before_end_of_day
         result.push(calendar_slots.select do |calendar_slot|
           after_current_slot = calendar_slot["start"] >= end_of_busy_slot
