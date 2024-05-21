@@ -65,5 +65,6 @@ def free_slots(busy_days, step)
   result.flatten.uniq
 end
 
-def common_free_slots
+def common_free_slots(first_calendar, second_calendar, step)
+  free_slots(first_calendar, step) & free_slots(second_calendar, step)
 end
