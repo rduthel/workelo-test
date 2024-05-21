@@ -34,18 +34,22 @@ def free_slots(busy_days, step)
     busy_slots.each_with_index do |busy_slot, index|
       start_of_busy_slot = Time.new(busy_slot["start"])
       end_of_busy_slot = Time.new(busy_slot["end"])
-      if index.zero? && start_of_busy_slot.hour > 9 && !search_before_9
-        result.push(calendar_slots.select { |calendar_slot| calendar_slot["end"] <= start_of_busy_slot })
+      first_slot_before_start_of_day = index.zero? && start_of_busy_slot.hour > 9
+      next_slot = busy_slots[index + 1]
+      end_of_slot_before_end_of_day = end_of_busy_slot.hour < 18
+      if first_slot_before_start_of_day && !search_before_9
+        slots_before_current = calendar_slots.select { |calendar_slot| calendar_slot["end"] <= start_of_busy_slot }
+        result.push(slots_before_current)
         search_before_9 = true
         redo
-      elsif busy_slots[index + 1]
-        start_of_next_busy_slot = Time.new(busy_slots[index + 1]["start"])
+      elsif next_slot
+        start_of_next_busy_slot = Time.new(next_slot["start"])
         result.push(calendar_slots.select do |calendar_slot|
           before_next_slot = calendar_slot["end"] <= start_of_next_busy_slot
           after_current_slot = calendar_slot["start"] >= end_of_busy_slot
           before_next_slot && after_current_slot
         end)
-      elsif end_of_busy_slot.hour < 18
+      elsif end_of_slot_before_end_of_day
         result.push(calendar_slots.select do |calendar_slot|
           after_current_slot = calendar_slot["start"] >= end_of_busy_slot
           before_end_of_day = calendar_slot["end"] <= date_at(day, 18)
