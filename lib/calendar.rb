@@ -1,4 +1,5 @@
 require "date"
+require_relative "../app/models/slot"
 
 ONE_HOUR = 60 * 60
 MINIMUM_STEP = ONE_HOUR
@@ -83,13 +84,4 @@ end
 
 def common_free_slots(first_calendar, second_calendar, step)
   free_slots(first_calendar, step) & free_slots(second_calendar, step)
-end
-
-class Slot
-  attr_accessor :start, :end
-
-  def initialize(start_of_slot, end_of_slot)
-    @start = Time.new(start_of_slot)
-    @end = Time.new(end_of_slot)
-  end
 end
