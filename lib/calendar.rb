@@ -1,6 +1,7 @@
 require "date"
 require_relative "../app/models/slot"
 require_relative "selectors/selection"
+require_relative "selectors/slots_before_current_selection"
 
 ONE_HOUR = 60 * 60
 MINIMUM_STEP = ONE_HOUR
@@ -64,12 +65,6 @@ end
 
 def common_free_slots(first_calendar, second_calendar, step)
   free_slots(first_calendar, step) & free_slots(second_calendar, step)
-end
-
-class SlotsBeforeCurrentSelection < Selection
-  def select
-    slots.select { |slot| slot["end"] <= current_slot&.start }
-  end
 end
 
 class AfterCurrentSlotAndBeforeNextOne < Selection
