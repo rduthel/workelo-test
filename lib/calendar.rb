@@ -55,7 +55,7 @@ def free_slots(busy_calendar, step)
 
   busy_calendar_day_by_day.each_pair do |day, busy_slots_of_day|
     search_before_start_of_day = false
-    calendar_slots = hourly_ranges(day, step)
+    slots_of_day = hourly_ranges(day, step)
     busy_slots_of_day.each_with_index do |busy_slot, index|
       start_of_busy_slot = Time.new(busy_slot["start"])
       end_of_busy_slot = Time.new(busy_slot["end"])
@@ -63,17 +63,17 @@ def free_slots(busy_calendar, step)
       next_slot = busy_slots_of_day[index + 1]
       end_of_slot_before_end_of_day = end_of_busy_slot.hour < END_OF_DAY
       if first_slot_before_start_of_day && !search_before_start_of_day
-        result.push(slots_before_current(calendar_slots, start_of_busy_slot))
+        result.push(slots_before_current(slots_of_day, start_of_busy_slot))
         search_before_start_of_day = true
         redo
       elsif next_slot
         start_of_next_busy_slot = Time.new(next_slot["start"])
-        result.push(calendar_slots.select { |calendar_slot| after_current_slot_and_before_next_slot(calendar_slot, end_of_busy_slot, start_of_next_busy_slot) })
+        result.push(slots_of_day.select { |calendar_slot| after_current_slot_and_before_next_slot(calendar_slot, end_of_busy_slot, start_of_next_busy_slot) })
       elsif end_of_slot_before_end_of_day
-        result.push(calendar_slots.select { |calendar_slot| after_current_slot_and_before_end_of_day(calendar_slot, day, end_of_busy_slot) })
+        result.push(slots_of_day.select { |calendar_slot| after_current_slot_and_before_end_of_day(calendar_slot, day, end_of_busy_slot) })
       else
         end_of_previous_slot = Time.new(busy_slots_of_day[index - 1]["end"])
-        result.push(calendar_slots.select { |calendar_slot| after_current_slot_or_between_previous_and_current(calendar_slot, end_of_busy_slot, start_of_busy_slot, end_of_previous_slot) })
+        result.push(slots_of_day.select { |calendar_slot| after_current_slot_or_between_previous_and_current(calendar_slot, end_of_busy_slot, start_of_busy_slot, end_of_previous_slot) })
       end
     end
   end
