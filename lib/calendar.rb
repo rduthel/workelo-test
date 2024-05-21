@@ -70,14 +70,13 @@ def free_slots(busy_calendar, step)
         redo
       elsif next_slot
         selection = slots_of_day.select { |slot| after_current_slot_and_before_next_slot(slot:, end_of_busy_slot: busy_slot.end, start_of_next_busy_slot: next_slot.start) }
-        result.push(selection)
       elsif end_of_slot_before_end_of_day
         selection = slots_of_day.select { |slot| after_current_slot_and_before_end_of_day(slot:, end_of_day: date_at(day, END_OF_DAY), end_of_busy_slot: busy_slot.end) }
-        result.push(selection)
       else
         selection = slots_of_day.select { |slot| after_current_slot_or_between_previous_and_current(slot:, busy_slot:, end_of_previous_slot: busy_slots_of_day[index - 1].end) }
-        result.push(selection)
       end
+
+      result.push(selection)
     end
   end
 
