@@ -65,6 +65,21 @@ def common_free_slots(first_calendar, second_calendar, step)
   free_slots(first_calendar, step) & free_slots(second_calendar, step)
 end
 
+class Selection
+  attr_accessor :slots, :previous_slot, :current_slot, :next_slot
+
+  def initialize(slots:, previous_slot: nil, current_slot: nil, next_slot: nil)
+    @slots = slots
+    @previous_slot = previous_slot
+    @current_slot = current_slot
+    @next_slot = next_slot
+  end
+
+  def select
+    raise NotImplementedError
+  end
+end
+
 class SlotsBeforeCurrentSelection
   attr_accessor :slots, :start_of_busy_slot
 
