@@ -16,7 +16,7 @@ RSpec.describe "calendar" do
     context "step 1" do
       let(:step) { 1 }
       it "works" do
-        result = slots_of_day(Time.new(2022, 8, 1), step)
+        result = CalendarSlot.new(date: Time.new(2022, 8, 1), step:).slots_of_day
         expect(result.map { |slot| [slot.start, slot.end] }).to match_array(output.map { |slot| [slot.start, slot.end] })
       end
     end
@@ -24,7 +24,7 @@ RSpec.describe "calendar" do
     context "step 2" do
       let(:step) { 2 }
       it "works" do
-        result = slots_of_day(Time.new(2022, 8, 1), step)
+        result = CalendarSlot.new(date: Time.new(2022, 8, 1), step:).slots_of_day
         expect(result.map { |slot| [slot.start, slot.end] }).to match_array(output.map { |slot| [slot.start, slot.end] })
       end
     end
