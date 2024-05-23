@@ -39,9 +39,7 @@ def free_slots(busy_calendar, step)
     .group_by { |slot| slot.start.to_date }
 
   busy_calendar_day_by_day.each_pair do |day, busy_slots_of_day|
-    slots_of_day = slots_of_day(day, step)
-
-    slots_of_day.each do |slot|
+    slots_of_day(day, step).each do |slot|
       busy = busy_slots_of_day.any? do |busy_slot|
         slot_in_busy_slot = slot.start >= busy_slot.start && slot.end <= busy_slot.end
         busy_slot_in_slot = busy_slot.start >= slot.start && busy_slot.end <= slot.end
