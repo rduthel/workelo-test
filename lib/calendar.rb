@@ -32,13 +32,16 @@ def slots_of_day(date, step)
   result
 end
 
+def slot_in_busy_slot(busy_slot, slot)
+  slot.start >= busy_slot.start && slot.end <= busy_slot.end
+end
+
 def overlapping_slots?(busy_slot, slot)
-  slot_in_busy_slot = slot.start >= busy_slot.start && slot.end <= busy_slot.end
   busy_slot_in_slot = busy_slot.start >= slot.start && busy_slot.end <= slot.end
   busy_slot_end_in_slot = busy_slot.end > slot.start && busy_slot.end <= slot.end
   busy_slot_start_in_slot = busy_slot.start >= slot.start && busy_slot.start < slot.end
 
-  slot_in_busy_slot || busy_slot_in_slot || busy_slot_end_in_slot || busy_slot_start_in_slot
+  slot_in_busy_slot(busy_slot, slot) || busy_slot_in_slot || busy_slot_end_in_slot || busy_slot_start_in_slot
 end
 
 def busy?(busy_slots_of_day, slot)
