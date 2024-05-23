@@ -24,7 +24,7 @@ def hourly_ranges(date, step)
   while start_of_date + step * ONE_HOUR <= end_of_date
     range_start = start_of_date
     range_end = start_of_date + step * ONE_HOUR
-    result.push({"start" => range_start, "end" => range_end})
+    result.push(Slot.new(range_start, range_end))
 
     start_of_date += MINIMUM_STEP
   end
@@ -35,7 +35,7 @@ end
 def free_slots(busy_calendar, step)
   result = []
   busy_calendar_day_by_day = busy_calendar
-    .map { |calendar| Slot.new(calendar["start"], calendar["end"]) }
+    .map { |calendar| Slot.new(Time.new(calendar["start"]), Time.new(calendar["end"])) }
     .group_by { |slot| slot.start.to_date }
 
   busy_calendar_day_by_day.each_pair do |day, busy_slots_of_day|
@@ -67,5 +67,5 @@ def free_slots(busy_calendar, step)
 end
 
 def common_free_slots(first_calendar, second_calendar, step)
-  free_slots(first_calendar, step) & free_slots(second_calendar, step)
+  free_slots(first_calendar, step).map(&:to_h) & free_slots(second_calendar, step).map(&:to_h)
 end

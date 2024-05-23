@@ -1,5 +1,5 @@
 class SlotsBeforeCurrentSelection < Selection
   def select
-    slots.select { |slot| slot["end"] <= current_slot&.start }
+    slots.select { |slot| slot.end <= current_slot&.start }
   end
 end

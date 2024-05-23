@@ -6,23 +6,26 @@ RSpec.describe "calendar" do
   describe "#hourly_ranges" do
     let(:output) do
       raw_output = JSON.parse(File.read("spec/fixtures/outputs/hourly_ranges/step/#{step}/output.json"))
-      raw_output.each do |hash|
-        hash["start"] = Time.new(hash["start"])
-        hash["end"] = Time.new(hash["end"])
+      raw_output.map do |hash|
+        start_as_time = Time.new(hash["start"])
+        end_as_time = Time.new(hash["end"])
+        Slot.new(start_as_time, end_as_time)
       end
     end
 
     context "step 1" do
       let(:step) { 1 }
       it "works" do
-        expect(hourly_ranges(Time.new(2022, 8, 1), step)).to match_array(output)
+        result = hourly_ranges(Time.new(2022, 8, 1), step)
+        expect(result.map { |slot| [slot.start, slot.end] }).to match_array(output.map { |slot| [slot.start, slot.end] })
       end
     end
 
     context "step 2" do
       let(:step) { 2 }
       it "works" do
-        expect(hourly_ranges(Time.new(2022, 8, 1), step)).to match_array(output)
+        result = hourly_ranges(Time.new(2022, 8, 1), step)
+        expect(result.map { |slot| [slot.start, slot.end] }).to match_array(output.map { |slot| [slot.start, slot.end] })
       end
     end
   end
@@ -31,9 +34,10 @@ RSpec.describe "calendar" do
     let(:input) { JSON.parse(File.read("spec/fixtures/inputs/free_slots/step/#{step}/input.json")) }
     let(:output) do
       raw_output = JSON.parse(File.read("spec/fixtures/outputs/free_slots/step/#{step}/output.json"))
-      raw_output.each do |hash|
-        hash["start"] = Time.new(hash["start"])
-        hash["end"] = Time.new(hash["end"])
+      raw_output.map do |hash|
+        start_as_time = Time.new(hash["start"])
+        end_as_time = Time.new(hash["end"])
+        Slot.new(start_as_time, end_as_time)
       end
     end
 
@@ -41,24 +45,17 @@ RSpec.describe "calendar" do
       let(:step) { 1 }
 
       it "works" do
-        expect(free_slots(input, step)).to match_array(output)
+        result = free_slots(input, step)
+        expect(result.map { |slot| [slot.start, slot.end] }).to match_array(output.map { |slot| [slot.start, slot.end] })
       end
     end
 
     context "step 2" do
-      let(:input) { JSON.parse(File.read("spec/fixtures/inputs/free_slots/step/#{step}/input.json")) }
-      let(:output) do
-        raw_output = JSON.parse(File.read("spec/fixtures/outputs/free_slots/step/#{step}/output.json"))
-        raw_output.each do |hash|
-          hash["start"] = Time.new(hash["start"])
-          hash["end"] = Time.new(hash["end"])
-        end
-      end
-
       let(:step) { 2 }
 
       it "works" do
-        expect(free_slots(input, step)).to match_array(output)
+        result = free_slots(input, step)
+        expect(result.map { |slot| [slot.start, slot.end] }).to match_array(output.map { |slot| [slot.start, slot.end] })
       end
     end
   end
@@ -68,9 +65,11 @@ RSpec.describe "calendar" do
     let(:input_andy) { JSON.parse(File.read("spec/fixtures/inputs/common_free_slots/step/#{step}/input_andy.json")) }
     let(:output) do
       raw_output = JSON.parse(File.read("spec/fixtures/outputs/common_free_slots/step/#{step}/output.json"))
-      raw_output.each do |hash|
-        hash["start"] = Time.new(hash["start"])
-        hash["end"] = Time.new(hash["end"])
+      raw_output.map do |slot|
+        {
+          start: Time.new(slot["start"]),
+          end: Time.new(slot["end"])
+        }
       end
     end
 
