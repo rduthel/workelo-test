@@ -1,28 +1,24 @@
 require "date"
+require_relative "calendar_slot"
 require_relative "../app/models/slot"
 require_relative "are_slots_overlapping"
 
-ONE_HOUR = 60 * 60
-MINIMUM_STEP = ONE_HOUR
-START_OF_DAY = 9
-END_OF_DAY = 18
-
 def date_at(date, hour)
   date_at_midnight = Time.new(date.year, date.month, date.day)
-  date_at_midnight + hour * ONE_HOUR
+  date_at_midnight + hour * CalendarSlot::ONE_HOUR
 end
 
 def slots_of_day(date, step)
   result = []
-  start_of_date = date_at(date, START_OF_DAY)
-  end_of_date = date_at(date, END_OF_DAY)
+  start_of_date = date_at(date, CalendarSlot::START_OF_DAY)
+  end_of_date = date_at(date, CalendarSlot::END_OF_DAY)
 
-  while start_of_date + step * ONE_HOUR <= end_of_date
+  while start_of_date + step * CalendarSlot::ONE_HOUR <= end_of_date
     range_start = start_of_date
-    range_end = start_of_date + step * ONE_HOUR
+    range_end = start_of_date + step * CalendarSlot::ONE_HOUR
     result.push(Slot.new(range_start, range_end))
 
-    start_of_date += MINIMUM_STEP
+    start_of_date += CalendarSlot::MINIMUM_STEP
   end
 
   result
