@@ -1,5 +1,6 @@
 require "date"
 require_relative "../app/models/slot"
+require_relative "are_slots_overlapping"
 require_relative "selectors/selection"
 require_relative "selectors/slots_before_current_selection"
 require_relative "selectors/after_current_slot_and_before_next_one_selection"
@@ -32,28 +33,8 @@ def slots_of_day(date, step)
   result
 end
 
-def slot_in_busy_slot(busy_slot, slot)
-  slot.start >= busy_slot.start && slot.end <= busy_slot.end
-end
-
-def busy_slot_in_slot(busy_slot, slot)
-  busy_slot.start >= slot.start && busy_slot.end <= slot.end
-end
-
-def busy_slot_end_in_slot(busy_slot, slot)
-  busy_slot.end > slot.start && busy_slot.end <= slot.end
-end
-
-def busy_slot_start_in_slot(busy_slot, slot)
-  busy_slot.start >= slot.start && busy_slot.start < slot.end
-end
-
-def overlapping_slots?(busy_slot, slot)
-  slot_in_busy_slot(busy_slot, slot) || busy_slot_in_slot(busy_slot, slot) || busy_slot_end_in_slot(busy_slot, slot) || busy_slot_start_in_slot(busy_slot, slot)
-end
-
 def busy?(busy_slots_of_day, slot)
-  busy_slots_of_day.any? { |busy_slot| overlapping_slots?(busy_slot, slot) }
+  busy_slots_of_day.any? { |busy_slot| AreSlotsOverlapping.new(slot:, busy_slot:).overlapping? }
 end
 
 def free_slots(busy_calendar, step)
