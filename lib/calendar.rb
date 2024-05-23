@@ -13,8 +13,8 @@ def free_slots(busy_calendar, step)
     .map { |calendar| Slot.new(Time.new(calendar["start"]), Time.new(calendar["end"])) }
     .group_by { |slot| slot.start.to_date }
 
-  busy_calendar_day_by_day.each_pair do |day, busy_slots_of_day|
-    CalendarSlot.new(date: day, step:).slots_of_day.each { |slot| result.push(slot) unless busy?(busy_slots_of_day, slot) }
+  busy_calendar_day_by_day.each_pair do |date, busy_slots_of_day|
+    CalendarSlot.new(date:, step:).slots_of_day.each { |slot| result.push(slot) unless busy?(busy_slots_of_day, slot) }
   end
 
   result
