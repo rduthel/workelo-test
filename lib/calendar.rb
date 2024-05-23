@@ -41,6 +41,10 @@ def overlapping_slots?(busy_slot, slot)
   slot_in_busy_slot || busy_slot_in_slot || busy_slot_end_in_slot || busy_slot_start_in_slot
 end
 
+def busy?(busy_slots_of_day, slot)
+  busy_slots_of_day.any? { |busy_slot| overlapping_slots?(busy_slot, slot) }
+end
+
 def free_slots(busy_calendar, step)
   result = []
   busy_calendar_day_by_day = busy_calendar
@@ -48,13 +52,7 @@ def free_slots(busy_calendar, step)
     .group_by { |slot| slot.start.to_date }
 
   busy_calendar_day_by_day.each_pair do |day, busy_slots_of_day|
-    slots_of_day(day, step).each do |slot|
-      busy = busy_slots_of_day.any? do |busy_slot|
-        overlapping_slots?(busy_slot, slot)
-      end
-
-      result.push(slot) unless busy
-    end
+    slots_of_day(day, step).each { |slot| result.push(slot) unless busy?(busy_slots_of_day, slot) }
   end
 
   result
