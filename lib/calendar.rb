@@ -1,11 +1,6 @@
 require "date"
 require_relative "../app/models/slot"
 require_relative "are_slots_overlapping"
-require_relative "selectors/selection"
-require_relative "selectors/slots_before_current_selection"
-require_relative "selectors/after_current_slot_and_before_next_one_selection"
-require_relative "selectors/after_current_slot_and_before_end_of_day_selection"
-require_relative "selectors/after_current_slot_or_between_previous_and_current_selection"
 
 ONE_HOUR = 60 * 60
 MINIMUM_STEP = ONE_HOUR
