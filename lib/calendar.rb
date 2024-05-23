@@ -16,7 +16,7 @@ def date_at(date, hour)
   date_at_midnight + hour * ONE_HOUR
 end
 
-def hourly_ranges(date, step)
+def slots_of_day(date, step)
   result = []
   start_of_date = date_at(date, START_OF_DAY)
   end_of_date = date_at(date, END_OF_DAY)
@@ -39,7 +39,7 @@ def free_slots(busy_calendar, step)
     .group_by { |slot| slot.start.to_date }
 
   busy_calendar_day_by_day.each_pair do |day, busy_slots_of_day|
-    slots_of_day = hourly_ranges(day, step)
+    slots_of_day = slots_of_day(day, step)
 
     slots_of_day.each do |slot|
       busy = busy_slots_of_day.any? do |busy_slot|

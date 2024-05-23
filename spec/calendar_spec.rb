@@ -3,7 +3,7 @@ require "spec_helper"
 require_relative "../lib/calendar"
 
 RSpec.describe "calendar" do
-  describe "#hourly_ranges" do
+  describe "#slots_of_day" do
     let(:output) do
       raw_output = JSON.parse(File.read("spec/fixtures/outputs/hourly_ranges/step/#{step}/output.json"))
       raw_output.map do |hash|
@@ -16,7 +16,7 @@ RSpec.describe "calendar" do
     context "step 1" do
       let(:step) { 1 }
       it "works" do
-        result = hourly_ranges(Time.new(2022, 8, 1), step)
+        result = slots_of_day(Time.new(2022, 8, 1), step)
         expect(result.map { |slot| [slot.start, slot.end] }).to match_array(output.map { |slot| [slot.start, slot.end] })
       end
     end
@@ -24,7 +24,7 @@ RSpec.describe "calendar" do
     context "step 2" do
       let(:step) { 2 }
       it "works" do
-        result = hourly_ranges(Time.new(2022, 8, 1), step)
+        result = slots_of_day(Time.new(2022, 8, 1), step)
         expect(result.map { |slot| [slot.start, slot.end] }).to match_array(output.map { |slot| [slot.start, slot.end] })
       end
     end
