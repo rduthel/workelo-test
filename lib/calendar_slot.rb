@@ -8,4 +8,16 @@ class CalendarSlot
   public_constant :MINIMUM_STEP
   public_constant :START_OF_DAY
   public_constant :END_OF_DAY
+
+  attr_reader :date, :hour
+
+  def initialize(date:, hour:)
+    @date = date
+    @hour = hour
+  end
+
+  def date_at
+    date_at_midnight = Time.new(date.year, date.month, date.day)
+    date_at_midnight + hour * ONE_HOUR
+  end
 end

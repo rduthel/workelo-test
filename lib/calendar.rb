@@ -3,15 +3,10 @@ require_relative "calendar_slot"
 require_relative "../app/models/slot"
 require_relative "are_slots_overlapping"
 
-def date_at(date, hour)
-  date_at_midnight = Time.new(date.year, date.month, date.day)
-  date_at_midnight + hour * CalendarSlot::ONE_HOUR
-end
-
 def slots_of_day(date, step)
   result = []
-  start_of_date = date_at(date, CalendarSlot::START_OF_DAY)
-  end_of_date = date_at(date, CalendarSlot::END_OF_DAY)
+  start_of_date = CalendarSlot.new(date:, hour: CalendarSlot::START_OF_DAY).date_at
+  end_of_date = CalendarSlot.new(date:, hour: CalendarSlot::END_OF_DAY).date_at
 
   while start_of_date + step * CalendarSlot::ONE_HOUR <= end_of_date
     range_start = start_of_date
